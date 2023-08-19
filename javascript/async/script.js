@@ -1,3 +1,9 @@
+//! 비동기 처리 방식
+//!================================================================
+//!          예전 버전             ES6                 ES7
+//!          CALLBACK            Promise         Async / Await
+//!================================================================
+
 // function fetchData() {
 //     return new Promise((resolve, reject) =>{
 //         // 비동기 요청
@@ -35,20 +41,20 @@ fetch('http://jsonlaceholder.typicode.com/todos/1')
 
 // 1. Promise.all의 파라미터로 순회가능한 객체 or 배열을 넣는다
 // 2. [promise1, promise2, promise3]각 프로미스가 모두 성공해야 then으로 넘어간다
-const promise1 = Promise.resolve(3);
-const promise2 = 42;
-const promise3 = new Promise((resolve, reject) => {
-    setTimeout(() => {
-        resolve('success');
-    }, 1000,'foo');
-});
+// const promise1 = Promise.resolve(3);
+// const promise2 = 42;
+// const promise3 = new Promise((resolve, reject) => {
+//     setTimeout(() => {
+//         resolve('success');
+//     }, 1000,'foo');
+// });
 
-Promise.all([promise1, promise2, promise3])
-.then((response) => {
-    console.log(response);
-}).catch((error) => { // promise1 이 Promise.reject일때의 경우 Promise.all의 에러 처리
+// Promise.all([promise1, promise2, promise3])
+// .then((response) => {
+//     console.log(response);
+// }).catch((error) => { // promise1 이 Promise.reject일때의 경우 Promise.all의 에러 처리
 
-});
+// });
 
 
 const promise1 = new Promise((resolve, reject) => {
@@ -65,3 +71,17 @@ Promise.race([promise1, promise2])
 .then((response) => {
     console.log(response);// 가장 먼저 끝나는 promise2의 값을 리턴
 })
+
+async function makeRequests() {
+    try {
+        const response1 = await fetch('http://jsonplaceholder.typicode.com/todos/1');
+        const jsonResponse1 = await response1.json();
+        console.log(jsonResponse1);
+    } catch (error) {
+        console.log(error);
+    } finally{
+
+    }
+}
+
+makeRequests();
