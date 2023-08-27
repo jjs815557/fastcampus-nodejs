@@ -2,7 +2,7 @@ const mailer = require('nodemailer');
 const  welcome  = require('./welcome_template');
 const  goodbye  = require('./goodbye_template');
 const getEmailData = (to, name, template) => {
-    let data = null;
+    let data = null; 
 
     switch (template) {
         case 'welcome' : data = {
