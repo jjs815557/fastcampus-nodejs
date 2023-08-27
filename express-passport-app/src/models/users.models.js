@@ -26,6 +26,31 @@ const userSchema = mongoose.Schema({
     }
 });
 
+userSchema.methods.comparePassword = async function(plainPassword) {
+    //bcrypt.compare -> 클라이언트에서 보내온 비번(plainPassword)을 암호화 하여 저장
+    // bcrypt.compare(plainPassword, this.password, function(err, isMatch) {
+    //     if (err) throw err;
+    //     cb(null, isMatch);
+    // });
+
+    //plainPassword => client, this.password => 데이터베이스에 있는 비번
+    //bcrypt.compare를 우선 사용하지 않고 넘어 갈 수 있기 위해 아래 코딩
+    
+    
+    // if (plainPassword === this.password) {
+    //     if (plainPassword === this.password) {
+    //         cb(null, true);
+    //     }else {
+    //         cb(null, false);
+    //     }
+    //     return cb({error : 'error'});
+    // }; 
+    try {
+        return this.password === plainPassword;
+    } catch (err) {
+        throw err;
+    }
+}
 const User = mongoose.model('User', userSchema); // mongoose DB모델 생성
 
 module.exports = User;
