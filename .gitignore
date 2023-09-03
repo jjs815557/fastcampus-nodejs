@@ -1,2 +1,3 @@
 express-passport-app/.env
 TYPEORM-APP/data
+SEQUELIZE-APP/data
