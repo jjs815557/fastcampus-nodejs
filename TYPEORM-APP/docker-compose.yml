@@ -1,0 +1,30 @@
+version: '3' #도커 버전
+services:
+  db:
+    image: postgres:latest #사용할 디비 이미지
+    container_name: postgres_typeorm_container
+    restart: always #만약 컨테이너가 다운될시 재시작
+    ports:
+      - "5432:5432" #컨테이너 내부와 연결되는 외부 포트 명시
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSSWORD: "password"
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+    volumes:
+      - ./data:/var/lib/postgresql/data
+      #데이터가 저장될 ./data폴더가 없다면 자동생성
+      #컨테이너에서 /var/lib/postgresql/data 경로의 데이터가 쌓이며
+      #해당 데이터는 ./data폴더에 저장됨 
+      #즉)물리적 저장 위치인 ./data와 가상의 /var/lib/postgresql/data 와 매핑됨
+
+  # mongodb:
+  #   image: "mongo"
+  #   port:
+  #     -"27017:27017"
+  #   volumes:
+  #     - ./data:/data/db
+  #   networks:
+  #     - compose-networks #외부 네트워크망과 연결
+
+# networks: #외부 네트워크망을 구성할시 해당 옵션 설정하여 생성된 도커와 외부망으로 통신
+#   compose-networks: # 네트워크명은 임의로 생성 가능 단 해당 네트워크 이름과 도커안의 서비스들과 쌍을 이뤄야함
