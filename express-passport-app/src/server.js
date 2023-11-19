@@ -18,19 +18,37 @@ app.use(cookieSession({ // express는 쿠키를 처리하는 방법을 모르기
 }));
 
 app.use(passport.initialize()); 
-app.use(passport.session()); // 로그인 세션
-require('./config/passport');
+
+/* 로그인 세션 -> 사용하는 이유? http프로토콜을 stateless 즉 상태를 저장 할 수 없다
+최초 클라이언트에서 요청을 보낸 후 다시 request를 보내도 서버의 입장에서는 클라이언트가 누구인지 알 수 없다
+이런 stateless 단점을 보완 하기위해 클라이언트를 구분하는 세션을 사용한다
+*/
+app.use(passport.session()); 
+require('./config/passport'); // 각 로그인 별로 세션을 생성하는 모듈
 
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json()); //json 스트링을 오브잭트로 파싱 변환
 
-// view engine setup
+/*
+<form action = '/posts' method = 'POST'>
+    <input value = 'hi'/>
+    <button type = 'submit'>버튼<button/>
+<form/>
+*/
+app.use(express.urlencoded({ extended: false })); // 위의 html에서 클라이언트가 보낸 <input value = 'hi'/>요청을 가져오기 위해 사용
+
+/* view engine setup
+    app.use vs app.set 차이점
+    1. app.use는 미들웨어를 등록
+    2. app.set은 express 앱의 설정을 지정하는데 사용
+        -주로 뷰 엔진, 환경변수, 앱 설정 등
+*/
 app.set('views', path.join(__dirname, 'views')); // 절대경로 설정
 app.set('view engine', 'ejs'); // 어떤 teamplate engine를 사용할지 세팅
 
 //<form>태그의 <input> 데이터를 전송 받기 위해 사용
 app.use(express.urlencoded({ extended: false })); 
+
 mongoose.connect(process.env.MONGO_URI)
 .then(()=>{
     console.log('mongoDB 연결 성공');
@@ -39,7 +57,8 @@ mongoose.connect(process.env.MONGO_URI)
 app.use('/static/', express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
-    res.render('index');
+    //render()는 뷰 엔진을 사용하여 동적으로 html 템플릿을 생성하여 클라이언트에게 전송 
+    res.render('index'); 
 });
 
 app.get('/login', (req, res) => {
@@ -47,10 +66,12 @@ app.get('/login', (req, res) => {
 });
 
 
-//passport.authenticate 사용시 개념 
-//nomal login => local Strategy
-//Google login => Google Strategy
-//Facebook login => Facebook Strategy
+/*passport.authenticate 사용시 개념(Strategy 전략)
+각 로그인 전략에 따라 구성
+1. "local" : nomal login => local Strategy
+2. "google" : Google login => Google Strategy
+3. "facebook" : Facebook login => Facebook Strategy
+*/
 app.post('/login', (req, res, next)=>{
     passport.authenticate('local', (err, user, info)=>{ // 'local'선택시 클라이언트에서 전달해준 email, password만으로 인증
         if(err){
@@ -64,9 +85,8 @@ app.post('/login', (req, res, next)=>{
         }
         //passport에서 지원해주는 logIn메소드이며 세션을 생성해 준다
         req.logIn(user, (err)=>{
-            if(err){
-                return next(err);
-            }
+            if(err) return next(err);
+            
             res.redirect('/'); // 정상 로그인 성공시 첫페이지로 리다이렉션
         })
     })(req, res, next); //(req, res, next) -> 미들웨어 안에 미들웨어를 넣어주면 파라미터 값을 전달하지 못하여 이와 같이 맨끝에 넣는다

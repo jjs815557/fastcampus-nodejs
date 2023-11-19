@@ -5,7 +5,7 @@ const LocalStrategy = require('passport-local').Strategy;
 //passport-local 모듈을 설치해 사용 
 
 // req.login(user)
-passport.serializeUser((user, done) => { //세션의 데이터 생성 하여 클라이언트에 전달
+passport.serializeUser((user, done) => { //세션 데이터 생성 하여 클라이언트에 전달
     done(null, user.id);
 });
 
@@ -65,5 +65,23 @@ const LocalStrategyConfig = new LocalStrategy(
         }
     }
 );  
+passport.use(new LocalStrategy({
+    usernameField: 'email',
+    passwordField: 'password',
+}, (email, password, done) => {
+    User.findOne({
+        email : email.toLowerCase(),
+    }, (err, user)=>{
+        if(err) return done(err); // 통신에러
+        if(!user) return done(null, false, { msg: `Email ${email} not found`}); // 유저가 보낸중 이메일이 없는 경우
+        
+        user.comparePassword(password, (err, isMatch)=>{
+            if(err) return done(err);
+            if(isMatch) return done(null,user);
+
+            return done(null, false, {msg : `Invalid Email or password`});
+        });
+    });
+}));
 
 passport.use('local', LocalStrategyConfig);

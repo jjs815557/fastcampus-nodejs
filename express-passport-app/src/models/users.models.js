@@ -2,11 +2,11 @@ const mongoose = require('mongoose');
 
 /*  sparse : true 넣는 이유
     1. email + password => 로그인 ==> google : null
-    2. google           => 로그인 ==> google : whvjsohwe
+    2. google           => 로그인 ==> google : jjs7083(사용자 구글아이디)
     3. email + password => 로그인 ==> google : null
 
     사용자가 1,2,3번과 같이 로그인을 시도 하였을 경우
-    이전에 구글 로그인을 하였음에도 불구하고 "google : null"
+    이전에 2번 방법으로 구글 로그인을 하였음에도 불구하고 3번과 같이 로그인을 성공하면 "google : null" (유니크 값이 변경)
     값을 가지게 된다 이것을 방지해 주기위해 "sparse : true"사용
 */
 
@@ -26,7 +26,7 @@ const userSchema = mongoose.Schema({
     }
 });
 
-userSchema.methods.comparePassword = async function(plainPassword) {
+userSchema.methods.comparePassword = async function(plainPassword, cb) {
     //bcrypt.compare -> 클라이언트에서 보내온 비번(plainPassword)을 암호화 하여 저장
     // bcrypt.compare(plainPassword, this.password, function(err, isMatch) {
     //     if (err) throw err;
