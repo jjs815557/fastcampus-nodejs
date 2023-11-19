@@ -15,7 +15,7 @@ const publicDirectory = path.join(__dirname, '../public');
 app.use(express.static(publicDirectory));
 app.use(express.json());
 
-mongoose.connect('mongodb+srv://jjs815:aktkszldzhd815@cluster0.igl0w.mongodb.net/?retryWrites=true&w=majority')
+mongoose.connect('mongodb+srv://jjs815:<password>@cluster0.igl0w.mongodb.net/?retryWrites=true&w=majority')
     .then(() => {
         console.log('db 연결 성공');
     })
